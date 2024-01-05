@@ -1,7 +1,7 @@
- const express = require('express');
+const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = 3500;
+const port = 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -112,4 +112,3 @@ app.get('/create', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
-
