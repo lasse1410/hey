@@ -1,76 +1,42 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const app = express();
-const port = 3004;
+const port = 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-mongoose.connect('mongodb://localhost:27017/deineDatenbank', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+let reports = [];
 
-const reportSchema = new mongoose.Schema({
-  teamMember: String,
-  playerName: String,
-  date: String,
-  report: String,
-});
+app.get('/', (req, res) => {
+  let reportListHTML = '<h2>Berichte</h2>';
+  reportListHTML += '<a href="/create" class="to-create-button">Neuen Bericht erstellen</a>';
+  reportListHTML += '<link rel="stylesheet" type="text/css" href="/report-style.css">';
+  reportListHTML += '<ul>';
 
-const Report = mongoose.model('Report', reportSchema);
-
-app.get('/', async (req, res) => {
-  const searchTerm = req.query.search || '';
-
-  let filteredReports = await Report.find();
-
-  if (searchTerm) {
-    filteredReports = await Report.find({
-      $or: [
-        { teamMember: { $regex: searchTerm, $options: 'i' } },
-        { playerName: { $regex: searchTerm, $options: 'i' } },
-        { date: { $regex: searchTerm, $options: 'i' } },
-        { report: { $regex: searchTerm, $options: 'i' } },
-      ],
-    });
-  }
-
-  let reportListHTML = `
-    <h2>Berichte</h2>
-    <form action="/" method="get">
-      <label for="search">Suche nach:</label>
-      <input type="text" id="search" name="search" placeholder="Spielername, Teammitglied, Datum, Bericht" value="${searchTerm}">
-      <button type="submit">Suchen</button>
-    </form>
-    <a href="/create" class="to-create-button">Neuen Bericht erstellen</a>
-    <link rel="stylesheet" type="text/css" href="/report-style.css">
-    <ul>
-  `;
-
-  filteredReports.forEach(report => {
+  reports.forEach((report, index) => {
     reportListHTML += `
       <li>
-        <a href="/report/${report._id}">
+        <a href="/report/${index}">
           <strong>${report.teamMember}</strong> hat <strong>${report.playerName}</strong> am ${report.date} gebannt/gekickt: ${report.report}
         </a>
       </li>`;
   });
 
   reportListHTML += '</ul>';
+
   res.send(reportListHTML);
 });
 
-app.post('/addReport', async (req, res) => {
+app.post('/addReport', (req, res) => {
   const { teamMember, playerName, date, report } = req.body;
-  const reportObject = new Report({ teamMember, playerName, date, report });
-  await reportObject.save();
+  const reportObject = { teamMember, playerName, date, report };
+  reports.push(reportObject);
   res.redirect('/');
 });
 
-app.get('/report/:id', async (req, res) => {
+app.get('/report/:id', (req, res) => {
   const id = req.params.id;
-  const report = await Report.findById(id);
+  const report = reports[id];
   const reportHTML = `
     <h2>Berichtsakte</h2>
     <link rel="stylesheet" type="text/css" href="/report-stylesheet.css">
