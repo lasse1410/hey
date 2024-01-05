@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = 3004;
-const port = 3001;
+const port = 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -20,15 +19,9 @@ const reportSchema = new mongoose.Schema({
 });
 
 const Report = mongoose.model('Report', reportSchema);
-let reports = [];
 
 app.get('/', async (req, res) => {
   const searchTerm = req.query.search || '';
-app.get('/', (req, res) => {
-  let reportListHTML = '<h2>Berichte</h2>';
-  reportListHTML += '<a href="/create" class="to-create-button">Neuen Bericht erstellen</a>';
-  reportListHTML += '<link rel="stylesheet" type="text/css" href="/report-style.css">';
-  reportListHTML += '<ul>';
 
   let filteredReports = await Report.find();
 
@@ -44,63 +37,256 @@ app.get('/', (req, res) => {
   }
 
   let reportListHTML = `
-    <h2>Berichte</h2>
-    <form action="/" method="get">
-      <label for="search">Suche nach:</label>
-      <input type="text" id="search" name="search" placeholder="Spielername, Teammitglied, Datum, Bericht" value="${searchTerm}">
-      <button type="submit">Suchen</button>
-    </form>
-    <a href="/create" class="to-create-button">Neuen Bericht erstellen</a>
-    <link rel="stylesheet" type="text/css" href="/report-style.css">
-    <ul>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Berichte</title>
+      <style>
+        /* CSS für die Berichtsseite */
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f4;
+        }
+
+        .container {
+          max-width: 800px;
+          margin: 50px auto;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        input, textarea {
+          width: 100%;
+          padding: 8px;
+          margin-bottom: 16px;
+          box-sizing: border-box;
+        }
+
+        button {
+          background-color: #4caf50;
+          color: #fff;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: #45a049;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>Berichte</h2>
+        <form action="/" method="get">
+          <label for="search">Suche nach:</label>
+          <input type="text" id="search" name="search" placeholder="Spielername, Teammitglied, Datum, Bericht" value="${searchTerm}">
+          <button type="submit">Suchen</button>
+        </form>
+        <a href="/create" class="to-create-button">Neuen Bericht erstellen</a>
+        <ul>
   `;
 
   filteredReports.forEach(report => {
-  reports.forEach((report, index) => {
     reportListHTML += `
       <li>
         <a href="/report/${report._id}">
-        <a href="/report/${index}">
           <strong>${report.teamMember}</strong> hat <strong>${report.playerName}</strong> am ${report.date} gebannt/gekickt: ${report.report}
         </a>
       </li>`;
   });
 
-  reportListHTML += '</ul>';
+  reportListHTML += `
+        </ul>
+      </div>
+    </body>
+    </html>`;
 
   res.send(reportListHTML);
 });
 
 app.post('/addReport', async (req, res) => {
-app.post('/addReport', (req, res) => {
   const { teamMember, playerName, date, report } = req.body;
   const reportObject = new Report({ teamMember, playerName, date, report });
   await reportObject.save();
-  const reportObject = { teamMember, playerName, date, report };
-  reports.push(reportObject);
   res.redirect('/');
 });
 
 app.get('/report/:id', async (req, res) => {
-app.get('/report/:id', (req, res) => {
   const id = req.params.id;
   const report = await Report.findById(id);
-  const report = reports[id];
-  const reportHTML = `
-    <h2>Berichtsakte</h2>
-    <link rel="stylesheet" type="text/css" href="/report-stylesheet.css">
-    <h3>${report.teamMember} hat ${report.playerName} am ${report.date} gebannt/gekickt:</h3>
-    <p>${report.report}</p>`;
+
+  let reportHTML = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Berichtsakte</title>
+      <style>
+        /* CSS für die Berichtsakte-Seite */
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f4;
+        }
+
+        .container {
+          max-width: 800px;
+          margin: 50px auto;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+          color: #3498db;
+        }
+
+        h3 {
+          color: #333;
+        }
+
+        p {
+          color: #555;
+          line-height: 1.6;
+        }
+
+        a {
+          color: #3498db;
+          text-decoration: none;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>Berichtsakte</h2>
+        <h3>${report.teamMember} hat ${report.playerName} am ${report.date} gebannt/gekickt:</h3>
+        <p>${report.report}</p>
+      </div>
+    </body>
+    </html>`;
+
   res.send(reportHTML);
 });
+
 app.get('/create', (req, res) => {
-  const createFormHTML = `
-    <html>
-      <head>
-        <title>Ban/Kick Bericht erstellen</title>
-        <link rel="stylesheet" type="text/css" href="/style.css">
-      </head>
-      <body>
+  let createFormHTML = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Ban/Kick Bericht erstellen</title>
+      <style>
+        /* CSS für das Berichtsformular */
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f4;
+        }
+
+        .container {
+          max-width: 800px;
+          margin: 50px auto;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .to-create-button {
+          background-color: #3498db;
+          color: #fff;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          text-decoration: none;
+          display: inline-block;
+          margin-bottom: 10px;
+        }
+
+        .to-create-button:hover {
+          background-color: #2980b9;
+        }
+
+        ul {
+          list-style-type: none;
+          padding: 0;
+        }
+
+        li {
+          border-bottom: 1px solid #ddd;
+          padding: 10px 0;
+        }
+
+        a {
+          text-decoration: none;
+          color: #333;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+
+        /* Neue Stile für das Berichtsformular */
+        form {
+          max-width: 600px;
+          margin: 20px auto;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        input, textarea {
+          width: 100%;
+          padding: 8px;
+          margin-bottom: 16px;
+          box-sizing: border-box;
+        }
+
+        button {
+          background-color: #4caf50;
+          color: #fff;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: #45a049;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
         <h2>Ban/Kick Bericht erstellen</h2>
         <form action="/addReport" method="post">
           <label for="teamMember">Teammitglied:</label>
@@ -117,10 +303,13 @@ app.get('/create', (req, res) => {
           <br>
           <button type="submit">Hinzufügen</button>
         </form>
-      </body>
+      </div>
+    </body>
     </html>`;
+
   res.send(createFormHTML);
 });
+
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
