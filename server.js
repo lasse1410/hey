@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = 3001;
+const port = 3004;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
