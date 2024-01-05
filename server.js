@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const port = 3004;
+const port = 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -19,9 +20,15 @@ const reportSchema = new mongoose.Schema({
 });
 
 const Report = mongoose.model('Report', reportSchema);
+let reports = [];
 
 app.get('/', async (req, res) => {
   const searchTerm = req.query.search || '';
+app.get('/', (req, res) => {
+  let reportListHTML = '<h2>Berichte</h2>';
+  reportListHTML += '<a href="/create" class="to-create-button">Neuen Bericht erstellen</a>';
+  reportListHTML += '<link rel="stylesheet" type="text/css" href="/report-style.css">';
+  reportListHTML += '<ul>';
 
   let filteredReports = await Report.find();
 
@@ -49,28 +56,36 @@ app.get('/', async (req, res) => {
   `;
 
   filteredReports.forEach(report => {
+  reports.forEach((report, index) => {
     reportListHTML += `
       <li>
         <a href="/report/${report._id}">
+        <a href="/report/${index}">
           <strong>${report.teamMember}</strong> hat <strong>${report.playerName}</strong> am ${report.date} gebannt/gekickt: ${report.report}
         </a>
       </li>`;
   });
 
   reportListHTML += '</ul>';
+
   res.send(reportListHTML);
 });
 
 app.post('/addReport', async (req, res) => {
+app.post('/addReport', (req, res) => {
   const { teamMember, playerName, date, report } = req.body;
   const reportObject = new Report({ teamMember, playerName, date, report });
   await reportObject.save();
+  const reportObject = { teamMember, playerName, date, report };
+  reports.push(reportObject);
   res.redirect('/');
 });
 
 app.get('/report/:id', async (req, res) => {
+app.get('/report/:id', (req, res) => {
   const id = req.params.id;
   const report = await Report.findById(id);
+  const report = reports[id];
   const reportHTML = `
     <h2>Berichtsakte</h2>
     <link rel="stylesheet" type="text/css" href="/report-stylesheet.css">
@@ -78,7 +93,6 @@ app.get('/report/:id', async (req, res) => {
     <p>${report.report}</p>`;
   res.send(reportHTML);
 });
-
 app.get('/create', (req, res) => {
   const createFormHTML = `
     <html>
@@ -105,10 +119,8 @@ app.get('/create', (req, res) => {
         </form>
       </body>
     </html>`;
-
   res.send(createFormHTML);
 });
-
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
