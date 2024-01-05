@@ -197,91 +197,91 @@ app.get('/report/:id', async (req, res) => {
 
 app.get('/create', (req, res) => {
   const createFormHTML = `
-    <html>
+    <!DOCTYPE html>
+    <html lang="en">
       <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Ban/Kick Bericht erstellen</title>
-        <styles>
-        /* CSS hier einfügen */
-body {
-  <style>
-  /* CSS hier einfügen */
-  body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-  }
-  
-  .to-create-button {
-      background-color: #3498db;
-      color: #fff;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 10px;
-  }
-  
-  .to-create-button:hover {
-      background-color: #2980b9;
-  }
-  
-  ul {
-      list-style-type: none;
-      padding: 0;
-  }
-  
-  li {
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-  }
-  
-  a {
-      text-decoration: none;
-      color: #333;
-  }
-  
-  a:hover {
-      text-decoration: underline;
-  }
-  
-  /* Neue Stile für das Berichtsformular */
-  form {
-      max-width: 600px;
-      margin: 20px auto;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  label {
-      display: block;
-      margin-bottom: 8px;
-  }
-  
-  input, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 16px;
-      box-sizing: border-box;
-  }
-  
-  button {
-      background-color: #4caf50;
-      color: #fff;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-  }
-  
-  button:hover {
-      background-color: #45a049;
-  }
-  </style>
+        <style>
+          /* CSS hier einfügen */
+          body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              background-color: #f4f4f4;
+          }
+
+          .to-create-button {
+              background-color: #3498db;
+              color: #fff;
+              padding: 10px;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              text-decoration: none;
+              display: inline-block;
+              margin-bottom: 10px;
+          }
+
+          .to-create-button:hover {
+              background-color: #2980b9;
+          }
+
+          ul {
+              list-style-type: none;
+              padding: 0;
+          }
+
+          li {
+              border-bottom: 1px solid #ddd;
+              padding: 10px 0;
+          }
+
+          a {
+              text-decoration: none;
+              color: #333;
+          }
+
+          a:hover {
+              text-decoration: underline;
+          }
+
+          /* Neue Stile für das Berichtsformular */
+          form {
+              max-width: 600px;
+              margin: 20px auto;
+              background-color: #fff;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          }
+
+          label {
+              display: block;
+              margin-bottom: 8px;
+          }
+
+          input, textarea {
+              width: 100%;
+              padding: 8px;
+              margin-bottom: 16px;
+              box-sizing: border-box;
+          }
+
+          button {
+              background-color: #4caf50;
+              color: #fff;
+              padding: 10px;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+          }
+
+          button:hover {
+              background-color: #45a049;
+          }
+        </style>
       </head>
       <body>
         <h2>Ban/Kick Bericht erstellen</h2>
